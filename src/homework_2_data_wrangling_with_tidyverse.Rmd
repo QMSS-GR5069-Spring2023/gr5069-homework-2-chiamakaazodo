@@ -1,0 +1,220 @@
+---
+title: "Homework 2 - data wrangling with the tidyverse"
+author: "Chiamaka Azodo"
+date: "2/14/2022"
+output: 
+  md_document:
+    variant: markdown_github
+    toc: yes    
+  html_document:
+    
+    toc: yes
+    toc_float: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+
+library(ggplot2)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+
+```
+
+```{r, include=FALSE}
+
+# Upload the data
+
+seasons_stats <- read_csv("/Users/chiamakaazodo/Documents/MDS_2022/github/assignments/homework-2-chiamakaazodo/data/Seasons_Stats_NBA.csv")
+
+```
+
+***
+
+### 1. Which NBA player scored the most points in 1991?
+
+Ricky Pierce scored the most points in 1991.
+
+```{r}
+
+# Select the relevant columns, filter for the year of interest, then group by players so that when
+# the sum of points is collected its is by player and then sort in descending order the total number of points scored 
+# by the player and limit to the top 10 rows.
+
+seasons_stats %>%
+  select(Year, Player, PTS) %>%
+  filter(Year == 1991)  %>%
+  group_by(Player) %>%
+  summarise(total_pts = sum(PTS)) %>%
+  arrange(desc(total_pts)) %>%
+  top_n(10)
+  
+
+```
+
+### 2. Which player had the best free throw percentage from the year 2000 to the most recent year in the data?
+
+Since the year 2000, Aaron Miles has had the best free throw percentage. (When sorted alphabetically due to tied percentages)
+
+```{r}
+
+# Select the relevant columns, filter to the year 2000 and after 
+# Order the results by free throw percentage and then by player
+
+seasons_stats %>%
+  select(Year, Player, `FT%`) %>% 
+  filter(Year >= 2000) %>%
+  arrange(desc(`FT%`)) %>% 
+  arrange((Player)) %>%
+  top_n(10)
+
+```
+
+### 3. Rename the variable "Pos" to "position".
+
+```{r}
+
+# Use the rename function to change Pos variable. 
+
+seasons_stats %>%
+  rename(position = Pos) %>%
+  top_n(10)
+  
+```
+
+
+### 4. Use this variable to create two variables that are called "first_position" and "second_position".
+
+```{r, warning=FALSE}
+
+# Use the separate function to split position into two variables. 
+# There are NAs recorded for some players in the second_position variable because they didn't have a hyphenated position
+
+seasons_stats <- seasons_stats %>%
+  rename(position = Pos) %>%
+  separate(position, into = c("first_position", "second_position")) 
+
+# Preview the edited data
+
+seasons_stats %>%
+  top_n(10)
+
+```
+
+
+### 5. Unite these two variables back into a single variable called "position_united".
+
+```{r}
+
+seasons_stats <- seasons_stats %>%
+  unite(position_united, first_position, second_position, sep = "-", na.rm = TRUE) 
+
+
+# Preview the edited data
+
+seasons_stats %>%
+  top_n(10)
+
+```
+
+
+### 6. Create two new datasets.
+
+```{r}
+
+# Create a new data set with all variables excluding age using the select function
+# Also use select to create a new data with just player information
+# Use the mutate and seq functions to create a new column that counts from 1, to the length of the data table, by 1 intervals
+# Move mergeid to the front of the table using relocate for easier visibility
+
+season_data <- seasons_stats %>%
+  select(-Age) %>%
+  mutate(mergeid = seq(1,nrow(seasons_stats),1)) %>%
+  relocate(mergeid)
+
+player_data <- seasons_stats %>%
+  select(Year, Player, Age) %>%
+  mutate(mergeid = seq(1,nrow(seasons_stats),1)) %>%
+  relocate(mergeid)
+
+# Preview the completed data sets
+
+season_data %>%
+  top_n(10)
+
+player_data %>%
+  top_n(10)
+```
+
+
+### 7. Join the two datasets from question (6) together to recreate the original dataset plus the new merge id.
+
+```{r}
+
+# Use an inner join to combine the two tables since all records should appear in both
+
+merged_data <- player_data %>%
+  inner_join(season_data, by = "mergeid")
+
+# Preview the merged data
+
+merged_data %>%
+  top_n(10)
+
+```
+
+
+### 8. Subset the original dataset to 1995. Group the data by year and team name and then summarize the average number of points per team. Arrange from most to least points.
+
+```{r, message=FALSE}
+
+# Summarizing points scored per team for the year 1995 using dplyr functions
+
+team_pts_95 <- seasons_stats %>%
+  filter(Year == 1995) %>%
+  group_by(Year, Tm) %>%
+  summarise(avg_pts = mean(PTS, na.rm = TRUE)) %>%
+  arrange(desc(avg_pts)) 
+
+
+team_pts_95 %>%
+  top_n(10)
+
+```
+
+### 9. Reshape the data in the previous question into a wide format using the `tidyr` package. Create a wide dataset that keeps year in a single column, but spreads team names to multiple individual columns with each column delineating points per team in 1995.
+
+```{r}
+
+# Use the pivot_wider function to spread the data specifying the columns to collect the names and values from
+
+team_pts_95_wide <- team_pts_95 %>%
+  pivot_wider(names_from = Tm, values_from = avg_pts)
+
+team_pts_95_wide %>%
+  top_n(10)
+```
+
+
+### 10. Now return the data to a long (tidy) format by moving teams back into a single column and points in a single column.
+
+```{r}
+
+# Use the pivot_longer function to return the data back to normal
+# Instead of listing all the column names, just exclude the year column from pivot_longer
+
+team_pts_95_wide %>%
+  pivot_longer(!Year, names_to = "team", values_to = "avg_pts") %>%
+  top_n(10)
+
+```
+
+
+
+
+
