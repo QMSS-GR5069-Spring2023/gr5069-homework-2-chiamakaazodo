@@ -30,7 +30,8 @@ library(dplyr)
 
 # Upload the data
 
-seasons_stats <- read_csv("/Users/chiamakaazodo/Documents/MDS_2022/github/assignments/homework-2-chiamakaazodo/data/Seasons_Stats_NBA.csv")
+setwd("/Users/chiamakaazodo/Documents/MDS_2022/github/assignments/homework-2-chiamakaazodo/data/")
+seasons_stats <- read_csv("Seasons_Stats_NBA.csv")
 
 ```
 
