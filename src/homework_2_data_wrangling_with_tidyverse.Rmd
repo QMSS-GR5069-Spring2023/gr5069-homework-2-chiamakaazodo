@@ -134,12 +134,15 @@ seasons_stats %>%
 
 season_data <- seasons_stats %>%
   select(-Age) %>%
-  mutate(mergeid = seq(1,nrow(seasons_stats),1)) %>%
+  mutate(mergeid = seq(1, nrow(seasons_stats), 1)) %>%
   relocate(mergeid)
 
 player_data <- seasons_stats %>%
-  select(Year, Player, Age) %>%
-  mutate(mergeid = seq(1,nrow(seasons_stats),1)) %>%
+  select(
+    Year, 
+    Player, 
+    Age) %>%
+  mutate(mergeid = seq(1, nrow(seasons_stats), 1)) %>%
   relocate(mergeid)
 
 # Preview the completed data sets
@@ -159,7 +162,9 @@ player_data %>%
 # Use an inner join to combine the two tables since all records should appear in both
 
 merged_data <- player_data %>%
-  inner_join(season_data, by = "mergeid")
+  inner_join(
+    season_data, 
+    by = "mergeid")
 
 # Preview the merged data
 
