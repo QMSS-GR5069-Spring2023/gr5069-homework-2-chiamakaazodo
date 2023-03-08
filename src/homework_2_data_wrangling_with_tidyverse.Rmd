@@ -46,14 +46,15 @@ Ricky Pierce scored the most points in 1991.
 # the sum of points is collected its is by player and then sort in descending order the total number of points scored 
 # by the player and limit to the top 10 rows.
 
-seasons_stats %>%
+mvp_player <- seasons_stats %>%
   select(Year, Player, PTS) %>%
   filter(Year == 1991)  %>%
   group_by(Player) %>%
   summarise(total_pts = sum(PTS)) %>%
   arrange(desc(total_pts)) %>%
-  top_n(10)
-  
+
+
+mvp_player %>% top_n(10)
 
 ```
 
@@ -66,12 +67,14 @@ Since the year 2000, Aaron Miles has had the best free throw percentage. (When s
 # Select the relevant columns, filter to the year 2000 and after 
 # Order the results by free throw percentage and then by player
 
-seasons_stats %>%
+fthrowperplayer <- seasons_stats %>%
   select(Year, Player, `FT%`) %>% 
   filter(Year >= 2000) %>%
   arrange(desc(`FT%`)) %>% 
   arrange((Player)) %>%
-  top_n(10)
+  
+
+fthrowperplayer %>% top_n(10)
 
 ```
 
