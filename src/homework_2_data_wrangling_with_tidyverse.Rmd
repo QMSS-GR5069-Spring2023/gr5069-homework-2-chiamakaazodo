@@ -177,7 +177,9 @@ merged_data %>%
 
 team_pts_95 <- seasons_stats %>%
   filter(Year == 1995) %>%
-  group_by(Year, Tm) %>%
+  group_by(
+    Year, 
+    Tm) %>%
   summarise(avg_pts = mean(PTS, na.rm = TRUE)) %>%
   arrange(desc(avg_pts)) 
 
@@ -194,7 +196,9 @@ team_pts_95 %>%
 # Use the pivot_wider function to spread the data specifying the columns to collect the names and values from
 
 team_pts_95_wide <- team_pts_95 %>%
-  pivot_wider(names_from = Tm, values_from = avg_pts)
+  pivot_wider(
+    names_from = Tm, 
+    values_from = avg_pts)
 
 team_pts_95_wide %>%
   top_n(10)
