@@ -97,7 +97,9 @@ seasons_stats %>%
 
 seasons_stats <- seasons_stats %>%
   rename(position = Pos) %>%
-  separate(position, into = c("first_position", "second_position")) 
+  separate(
+    position, 
+    into = c("first_position", "second_position")) 
 
 # Preview the edited data
 
@@ -112,7 +114,12 @@ seasons_stats %>%
 ```{r}
 
 seasons_stats <- seasons_stats %>%
-  unite(position_united, first_position, second_position, sep = "-", na.rm = TRUE) 
+  unite(
+    position_united, 
+    first_position, 
+    second_position, 
+    sep = "-", 
+    na.rm = TRUE) 
 
 
 # Preview the edited data
