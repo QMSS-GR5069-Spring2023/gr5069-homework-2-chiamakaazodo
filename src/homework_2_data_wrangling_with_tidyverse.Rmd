@@ -229,7 +229,10 @@ team_pts_95_wide %>%
 # Instead of listing all the column names, just exclude the year column from pivot_longer
 
 team_pts_95_wide %>%
-  pivot_longer(!Year, names_to = "team", values_to = "avg_pts") %>%
+  pivot_longer(
+    !Year, 
+    names_to = "team",
+    values_to = "avg_pts") %>%
   top_n(10)
 
 ```
